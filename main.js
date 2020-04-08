@@ -40,20 +40,36 @@ module.exports.loop = function () {
         }
     }
 
-    createCreeps();
+    // createCreeps();
 
     for (var name in Game.creeps) {
         var creep = Game.creeps[name];
         if (creep.memory.role === HARVESTER) {
-            roleHarvester.run(creep);
-        }
-        if (creep.memory.role === UPGRADER) {
-            roleUpgrader.run(creep);
-        }
-        if (creep.memory.role === BUILDER) {
-            roleBuilder.run(creep);
+            console.log('time: ' + Game.time);
+            if (Game.time % 5 == 0) {
+                var sources = creep.room.find(FIND_SOURCES);
+                sources.forEach(source => console.log('source: ' + source));
+                creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
+            }
         }
     }
+    // if (creep.memory.role === HARVESTER) {
+    //     roleHarvester.run(creep);
+    // }
+    // if (creep.memory.role === BUILDER) {
+    //     roleBuilder.run(creep);
+    // }
+    // if (creep.memory.role === UPGRADER) {
+    //     roleUpgrader.run(creep);
+    // }
+
+
+}
+
+function howMuchLeftToFillSpawn() {
+    return Game.spawns.Spawn1.store.getCapacity(RESOURCE_ENERGY) -
+        Game.spawns.Spawn1.store[RESOURCE_ENERGY]
+
 }
 
 function createCreeps() {
