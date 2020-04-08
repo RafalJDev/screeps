@@ -5,7 +5,7 @@ var spawnCreep = require('spawn.creep');
 var totalBodyCost = require('calculate.total.body.cost');
 var sourcesController = require('controller.sources');
 
-const HARVESTER = 'harvester'
+const MINER = 'miner'
 const BUILDER = 'builder'
 const UPGRADER = 'upgrader'
 
@@ -14,17 +14,21 @@ const universalWorker2 = [WORK, WORK, CARRY, CARRY, MOVE, MOVE]
 
 var creepsToCreate = [
     {
-        role: HARVESTER,
+        role: MINER,
         body: universalWorker
     },
-    {
+    /*{
+        role: MINER,
+        body: universalWorker
+    },*/
+    /*{
         role: BUILDER,
         body: universalWorker
     },
     {
         role: UPGRADER,
         body: universalWorker
-    },
+    },*/
 ]
 
 module.exports.loop = function () {
@@ -56,7 +60,7 @@ module.exports.loop = function () {
         //         creep.moveTo(sources[1], {visualizePathStyle: {stroke: '#ffaa00'}});
         //     }
         // }
-        if (creep.memory.role === HARVESTER) {
+        if (creep.memory.role === MINER) {
             roleHarvester.run(creep);
         }
         if (creep.memory.role === BUILDER) {
@@ -68,13 +72,13 @@ module.exports.loop = function () {
     }
 
     //TODO NEW MAIN
-    for (var spawnName in Game.spawns) {
-        let spawn = Game.spawns[spawnName];
-        // console.log('spawn: ' + spawn)
-        let room = spawn.room;
-
-        sourcesController.run(room)
-    }
+    // for (var spawnName in Game.spawns) {
+    //     let spawn = Game.spawns[spawnName];
+    //     // console.log('spawn: ' + spawn)
+    //     let room = spawn.room;
+    //
+    //     sourcesController.run(room)
+    // }
 
 
 }
@@ -91,13 +95,13 @@ function createCreeps() {
 
     var createdCreep
     for (var creepToCreate of creepsToCreate) {
-        // if (!existingCreepsRoles.includes(creepToCreate.role)) {
+        if (!existingCreepsRoles.includes(creepToCreate.role)) {
         if (totalBodyCost.run(creepToCreate.body)) {
             spawnCreep.run(creepToCreate);
             createdCreep = creepToCreate
             break;
         }
-        // }
+        }
     }
     if (createdCreep) {
         let index = creepsToCreate.indexOf(createdCreep);

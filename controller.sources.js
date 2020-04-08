@@ -40,10 +40,10 @@ var object = {
             let sourceX = source.pos.x
             let sourceY = source.pos.y
 
-            console.log('sourceX: ' + sourceX + ' sourceY: ' + sourceY)
+            // console.log('sourceX: ' + sourceX + ' sourceY: ' + sourceY)
 
             let maxMinersCount = howMuchCanMineAt(sourceX, sourceY, room)
-            console.log('maxMinersCount: ' + maxMinersCount)
+            // console.log('maxMinersCount: ' + maxMinersCount)
         }
 
 
