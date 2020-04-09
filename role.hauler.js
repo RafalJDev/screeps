@@ -1,28 +1,19 @@
-var object = {
+function goToMiner(creep) {
+    if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+    }
+}
+
+var hauler = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        console.log('harv')
-        let memory = creep.memory;
-        var sourceNumber = memory.source;
-        var source = creep.room.find(FIND_SOURCES)[sourceNumber];
-        let x = memory.minePosition.x;
-        let y = memory.minePosition.y;
 
-        if (false && creep.pos.x === x && creep.pos.y === y) {
-            creep.harvest(source);
-        } else if (false) {
-            creep.moveTo(x, y, {visualizePathStyle: {stroke: '#ffaa00'}});
+        if (creep.store.getFreeCapacity() > 0) {
+            var sources = creep.room.find(FIND_DROPPED_RESOURCES);
         }
 
-
-        if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
-        }
-        if (creep.store.getFreeCapacity() === 0) {
-            creep.drop(RESOURCE_ENERGY)
-        }
-        /*if (creep.store.getFreeCapacity() > 0) {
+        if (creep.store.getFreeCapacity() > 0) {
             var sources = creep.room.find(FIND_SOURCES);
             if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
@@ -43,8 +34,8 @@ var object = {
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
-        }*/
+        }
     }
 };
 
-module.exports = object;
+module.exports = hauler;

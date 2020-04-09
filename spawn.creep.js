@@ -4,15 +4,15 @@ var spawnCreep = {
 
     run: function (creep) {
 
-        console.log(
-            'Will create creep with body cost: ' +
-            totalBodyCost.run(creep.body) +
-            ' body: ' +
-            creep.body
-        )
+        // console.log(
+        //     'Will create creep with body cost: ' +
+        //     totalBodyCost.run(creep.body) +
+        //     ' body: ' +
+        //     creep.body
+        // )
 
-        Game.spawns['Spawn1'].spawnCreep(creep.body, creep.role + Game.time, {
-            memory: {role: creep.role}
+        Game.spawns['Spawn1'].spawnCreep(creep.body, creep.name + '_' + Game.time, {
+            memory: creep.memory
         });
     }
 
