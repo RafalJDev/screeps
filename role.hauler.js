@@ -8,6 +8,13 @@ var hauler = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        let sourceNumber = creep.memory.source
+
+        let source =  Memory.mySpawns.Spawn1.sources[sourceNumber]
+        let middlePositionIndex = source.middlePositionIndex
+
+
+
 
         if (creep.store.getFreeCapacity() > 0) {
             var sources = creep.room.find(FIND_DROPPED_RESOURCES);

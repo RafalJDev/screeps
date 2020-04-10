@@ -6,14 +6,6 @@ var object = {
         let memory = creep.memory;
         var sourceNumber = memory.source;
         var source = creep.room.find(FIND_SOURCES)[sourceNumber];
-        let x = memory.minePosition.x;
-        let y = memory.minePosition.y;
-
-        if (false && creep.pos.x === x && creep.pos.y === y) {
-            creep.harvest(source);
-        } else if (false) {
-            creep.moveTo(x, y, {visualizePathStyle: {stroke: '#ffaa00'}});
-        }
 
 
         if (creep.harvest(source) == ERR_NOT_IN_RANGE) {

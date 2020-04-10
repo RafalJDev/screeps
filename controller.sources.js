@@ -29,7 +29,8 @@ function isMineableAt(x, y, room) {
 function fillMemoryWithSource(sourceX, sourceY, mineablePositions) {
     Memory['mySpawns']['Spawn1']['sources'].push(
         {
-            x: sourceX, y: sourceY, mineablePositions: mineablePositions
+            x: sourceX, y: sourceY,
+            mineablePositions: mineablePositions,
         }
     )
 
@@ -62,15 +63,17 @@ var object = {
     //todo will calculate only once for first room
     run: function () {
         if (!Memory['mySpawns']) {
-            Memory['mySpawns'] = {
-                'Spawn1': {sources: []}
-            }
+            Memory['mySpawns'] = {}
+        }
+        for (var spawnName in Game.spawns) {
+            let spawn = Game.spawns[spawnName]
+            // console.log('spawn: ' + spawn)
+            let room = spawn.room
 
-            for (var spawnName in Game.spawns) {
-                let spawn = Game.spawns[spawnName]
-                // console.log('spawn: ' + spawn)
-                let room = spawn.room
-
+            if (!Memory['mySpawns']) {
+                Memory['mySpawns'][spawnName] = {
+                    sources: []
+                }
                 handleRoom(room, spawnName)
             }
         }

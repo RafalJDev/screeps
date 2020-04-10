@@ -30,7 +30,7 @@ var object = {
                     roleUpgrader.run(creep)
                     break
                 default:
-                    console.error('WTF is that role: ' + role)
+                    console.log('WTF is that role: ' + role)
             }
         }
     }
