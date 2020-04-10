@@ -1,7 +1,7 @@
 var totalBodyCost = require('calculate.total.body.cost')
 var sourcesController = require('controller.sources')
 var towersController = require('controller.towers')
-var rolesController = require('controller.roles')
+var creepsController = require('controller.creeps')
 var createCreepsController = require('controller.create.creeps')
 
 Memory.constants = {
@@ -33,7 +33,7 @@ const universalWorker2 = [WORK, WORK, CARRY, CARRY, MOVE, MOVE]
 module.exports.loop = function () {
     sourcesController.run()
     towersController.run()
-    rolesController.run()
+    creepsController.run()
     createCreepsController.run()
 }
 

@@ -2,6 +2,7 @@ var roleHarvester = require('role.harvester')
 var roleUpgrader = require('role.upgrader')
 var roleBuilder = require('role.builder')
 var roleFirstCreep = require('role.first.creep')
+var roleHauler = require('role.hauler')
 
 var object = {
 
@@ -28,6 +29,9 @@ var object = {
                     break
                 case UPGRADER:
                     roleUpgrader.run(creep)
+                    break
+                case HAULER:
+                    roleHauler.run(creep)
                     break
                 default:
                     console.log('WTF is that role: ' + role)

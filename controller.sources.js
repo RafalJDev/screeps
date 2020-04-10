@@ -70,7 +70,7 @@ var object = {
             // console.log('spawn: ' + spawn)
             let room = spawn.room
 
-            if (!Memory['mySpawns']) {
+            if (!Memory['mySpawns'][spawnName]) {
                 Memory['mySpawns'][spawnName] = {
                     sources: []
                 }

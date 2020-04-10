@@ -2,7 +2,7 @@ var object = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        console.log('harv')
+        // console.log('harv')
         let memory = creep.memory;
         var sourceNumber = memory.source;
         var source = creep.room.find(FIND_SOURCES)[sourceNumber];
