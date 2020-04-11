@@ -31,10 +31,13 @@ const universalWorker2 = [WORK, WORK, CARRY, CARRY, MOVE, MOVE]
 
 
 module.exports.loop = function () {
-    sourcesController.run()
-    towersController.run()
-    creepsController.run()
-    createCreepsController.run()
+
+    for (let spawnName in Game.spawns) {
+        sourcesController.run(spawnName)
+        towersController.run()
+        creepsController.run(spawnName)
+        createCreepsController.run(spawnName)
+    }
 }
 
 function howMuchLeftToFillSpawnAndExtensions() {

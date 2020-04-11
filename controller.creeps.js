@@ -1,4 +1,4 @@
-var roleHarvester = require('role.harvester')
+var roleMiner = require('role.miner')
 var roleUpgrader = require('role.upgrader')
 var roleBuilder = require('role.builder')
 var roleFirstCreep = require('role.first.creep')
@@ -6,7 +6,7 @@ var roleHauler = require('role.hauler')
 
 var object = {
 
-    run: function () {
+    run: function (spawnName) {
         const MINER = Memory.constants.MINER
         const BUILDER = Memory.constants.BUILDER
         const UPGRADER = Memory.constants.UPGRADER
@@ -19,19 +19,19 @@ var object = {
 
             switch (role) {
                 case FIRST_CREEP:
-                    roleFirstCreep.run(creep)
+                    roleFirstCreep.run(spawnName, creep)
                     break
                 case MINER:
-                    roleHarvester.run(creep)
+                    roleMiner.run(spawnName, creep)
                     break
                 case BUILDER:
-                    roleBuilder.run(creep)
+                    roleBuilder.run(spawnName, creep)
                     break
                 case UPGRADER:
-                    roleUpgrader.run(creep)
+                    roleUpgrader.run(spawnName, creep)
                     break
                 case HAULER:
-                    roleHauler.run(creep)
+                    roleHauler.run(spawnName, creep)
                     break
                 default:
                     console.log('WTF is that role: ' + role)

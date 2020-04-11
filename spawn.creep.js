@@ -2,7 +2,7 @@ var totalBodyCost = require('calculate.total.body.cost');
 
 var spawnCreep = {
 
-    run: function (creep) {
+    run: function (spawnName, creep) {
 
         console.log(
             'Will create creep with body cost: ' +
@@ -13,7 +13,7 @@ var spawnCreep = {
             JSON.stringify(creep.memory)
         )
 
-        Game.spawns['Spawn1'].spawnCreep(creep.body, creep.name + '_' + Game.time, {
+        Game.spawns[spawnName].spawnCreep(creep.body, creep.name + '_' + Game.time, {
             memory: creep.memory
         });
     }

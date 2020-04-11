@@ -1,10 +1,9 @@
 var object = {
 
-    /** @param {Creep} creep **/
-    run: function (creep) {
+    run: function (spawnName, creep) {
         if (creep.store.getFreeCapacity() > 0) {
             var sources = creep.room.find(FIND_SOURCES)
-            if (creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
+            if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}})
             }
         }
@@ -18,8 +17,6 @@ var object = {
             })
             if (targets.length > 0) {
                 if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    console.log(Game.time)
-                    console.log('move to spawn?')
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}})
                 }
             }
@@ -27,7 +24,7 @@ var object = {
 
         if (Object.keys(Game.creeps).length > 1) {
             let mineSourceNumber = 0
-            let source = Memory.mySpawns.Spawn1.sources[mineSourceNumber]
+            let source = Memory.mySpawns[spawnName].sources[mineSourceNumber]
             let x = source.x
             let y = source.y
 

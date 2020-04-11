@@ -1,14 +1,12 @@
-function handleFreeCapacity(creep) {
+function needEnergy(spawnName, creep) {
     let minerPosition = creep.memory.minerPosition
     let x = minerPosition.x
     let y = minerPosition.y
     let sourceNum = creep.memory.source
 
-    let source = Memory.mySpawns.Spawn1.sources[sourceNum]
+    let source = Memory.mySpawns[spawnName].sources[sourceNum]
     let sourceMineablePositions = source.mineablePositions
     // console.log('hauler role x:' + x + ' y:' + y)
-
-    // console.log('Free capacity')
 
     let foundResource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
             filter: function (resource) {
@@ -22,14 +20,14 @@ function handleFreeCapacity(creep) {
     // console.log('foundResource: ' + foundResource)
     if (foundResource) {
         if (creep.pickup(foundResource) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(x, y, {visualizePathStyle: {stroke: '#ffaa00'}})
+            creep.moveTo(foundResource.pos.x, foundResource.pos.y, {visualizePathStyle: {stroke: '#ffaa00'}})
         }
     } else {
         creep.moveTo(x, y, {visualizePathStyle: {stroke: '#ffaa00'}})
     }
 }
 
-function handleNoCapacity(creep) {
+function deliverEnergy(creep) {
     var targets = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_EXTENSION ||
@@ -46,21 +44,20 @@ function handleNoCapacity(creep) {
 
 }
 
-function handleHauler(creep) {
+function handleHauler(spawnName, creep) {
     if (creep.store.getFreeCapacity() > 0) {
-        handleFreeCapacity(creep)
+        needEnergy(spawnName, creep)
     } else {
-        handleNoCapacity(creep)
+        deliverEnergy(creep)
     }
 }
 
 
-var hauler = {
+var object = {
 
-    /** @param {Creep} creep **/
-    run: function (creep) {
-        handleHauler(creep)
+    run: function (spawnName, creep) {
+        handleHauler(spawnName, creep)
     }
 }
 
-module.exports = hauler
+module.exports = object

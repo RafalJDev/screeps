@@ -26,8 +26,8 @@ function isMineableAt(x, y, room) {
     return false
 }
 
-function fillMemoryWithSource(sourceX, sourceY, mineablePositions) {
-    Memory['mySpawns']['Spawn1']['sources'].push(
+function fillMemoryWithSource(spawnName, sourceX, sourceY, mineablePositions) {
+    Memory['mySpawns'][spawnName]['sources'].push(
         {
             x: sourceX, y: sourceY,
             mineablePositions: mineablePositions,
@@ -36,7 +36,7 @@ function fillMemoryWithSource(sourceX, sourceY, mineablePositions) {
 
 }
 
-function handleRoom(room) {
+function handleRoom(spawnName, room) {
 
     let sources = room.find(FIND_SOURCES)
     for (let i = 0; i < sources.length; i++) {
@@ -52,7 +52,7 @@ function handleRoom(room) {
         let maxMinersCount = mineablePositions.length
         // console.log('mineablePositions1: ' + mineablePositions1)
 
-        fillMemoryWithSource(sourceX, sourceY, mineablePositions)
+        fillMemoryWithSource(spawnName, sourceX, sourceY, mineablePositions)
     }
 
 
@@ -61,21 +61,19 @@ function handleRoom(room) {
 var object = {
 
     //todo will calculate only once for first room
-    run: function () {
+    run: function (spawnName) {
         if (!Memory['mySpawns']) {
             Memory['mySpawns'] = {}
         }
-        for (var spawnName in Game.spawns) {
-            let spawn = Game.spawns[spawnName]
-            // console.log('spawn: ' + spawn)
-            let room = spawn.room
 
-            if (!Memory['mySpawns'][spawnName]) {
-                Memory['mySpawns'][spawnName] = {
-                    sources: []
-                }
-                handleRoom(room, spawnName)
+        let spawn = Game.spawns[spawnName]
+        let room = spawn.room
+
+        if (!Memory['mySpawns'][spawnName]) {
+            Memory['mySpawns'][spawnName] = {
+                sources: []
             }
+            handleRoom(room, spawnName)
         }
 
 
