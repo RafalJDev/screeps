@@ -5,7 +5,6 @@ var object = {
             .map(part => BODYPART_COST[part])
             .reduce((previousValue, currentValue) => previousValue + currentValue)
     }
+}
 
-};
-
-module.exports = object;
+module.exports = object

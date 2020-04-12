@@ -3,7 +3,12 @@ function calculateMineablePositions(sourceX, sourceY, room) {
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
             if (isMineableAt(sourceX + i, sourceY + j, room)) {
-                mineablePositions.push({x: sourceX + i, y: sourceY + j})
+                mineablePositions.push(
+                    {
+                        minerX: sourceX + i, minerY: sourceY + j,
+                        workerX: sourceX + 2 * i, workerY: sourceY + 2 * j,
+                    }
+                )
             }
         }
     }
@@ -17,7 +22,7 @@ function isMineableAt(x, y, room) {
     for (let i = 0; i < block.length; i++) {
         let content = block[i]
         if (content.type === LOOK_TERRAIN &&
-            (content.terrain === 'plain' || content.terrain === 'swamp')
+            (content[LOOK_TERRAIN] === 'plain' || content.terrain === 'swamp')
         ) {
             // console.log('Type: ' + content.type)
             return true
@@ -31,12 +36,13 @@ function fillMemoryWithSource(spawnName, sourceX, sourceY, mineablePositions) {
         {
             x: sourceX, y: sourceY,
             mineablePositions: mineablePositions,
+            middlePos: mineablePositions[Math.floor(mineablePositions.length / 2)]
         }
     )
 
 }
 
-function handleRoom(spawnName, room) {
+function handleRoom(room, spawn) {
 
     let sources = room.find(FIND_SOURCES)
     for (let i = 0; i < sources.length; i++) {
@@ -52,7 +58,7 @@ function handleRoom(spawnName, room) {
         let maxMinersCount = mineablePositions.length
         // console.log('mineablePositions1: ' + mineablePositions1)
 
-        fillMemoryWithSource(spawnName, sourceX, sourceY, mineablePositions)
+        fillMemoryWithSource(spawn.name, sourceX, sourceY, mineablePositions)
     }
 
 
@@ -60,20 +66,18 @@ function handleRoom(spawnName, room) {
 
 var object = {
 
-    //todo will calculate only once for first room
-    run: function (spawnName) {
+    run: function (spawn) {
         if (!Memory['mySpawns']) {
             Memory['mySpawns'] = {}
         }
 
-        let spawn = Game.spawns[spawnName]
         let room = spawn.room
 
-        if (!Memory['mySpawns'][spawnName]) {
-            Memory['mySpawns'][spawnName] = {
+        if (!Memory['mySpawns'][spawn.name]) {
+            Memory['mySpawns'][spawn.name] = {
                 sources: []
             }
-            handleRoom(room, spawnName)
+            handleRoom(room, spawn)
         }
 
 

@@ -6,10 +6,12 @@ var roleHauler = require('role.hauler')
 
 var object = {
 
-    run: function (spawnName) {
+    run: function (spawn) {
         const MINER = Memory.constants.MINER
         const BUILDER = Memory.constants.BUILDER
+        const TEMP_BUILDER = Memory.constants.TEMP_BUILDER
         const UPGRADER = Memory.constants.UPGRADER
+        const TEMP_UPGRADER = Memory.constants.TEMP_UPGRADER
         const FIRST_CREEP = Memory.constants.FIRST_CREEP
         const HAULER = Memory.constants.HAULER
 
@@ -19,22 +21,34 @@ var object = {
 
             switch (role) {
                 case FIRST_CREEP:
-                    roleFirstCreep.run(spawnName, creep)
+                    roleFirstCreep.run(spawn.name, creep)
                     break
                 case MINER:
-                    roleMiner.run(spawnName, creep)
+                    roleMiner.run(spawn.name, creep)
                     break
                 case BUILDER:
-                    roleBuilder.run(spawnName, creep)
+                    roleBuilder.run(spawn.name, creep)
+                    break
+                case TEMP_BUILDER:
+                    if (spawn.room.controller.level === 2 && Game.constructionSites) {
+                        creep.memory.role = UPGRADER
+                    }
+                    roleBuilder.run(spawn.name, creep)
                     break
                 case UPGRADER:
-                    roleUpgrader.run(spawnName, creep)
+                    roleUpgrader.run(spawn.name, creep)
+                    break
+                case TEMP_UPGRADER:
+                    if (Object.keys(Game.constructionSites).length) {
+                        creep.memory.role = BUILDER
+                    }
+                    roleUpgrader.run(spawn.name, creep)
                     break
                 case HAULER:
-                    roleHauler.run(spawnName, creep)
+                    roleHauler.run(spawn.name, creep)
                     break
                 default:
-                    console.log('WTF is that role: ' + role)
+                    console.log('WTF is that role: ' + role + ' creep: ' + JSON.stringify(creep))
             }
         }
     }
