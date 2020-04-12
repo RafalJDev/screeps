@@ -16,7 +16,7 @@ var object = {
             let foundContainer = creep.room.find(FIND_STRUCTURES)
                 .filter(el => el.structureType === STRUCTURE_CONTAINER && el.pos.x === x && el.pos.y === y)
 
-            if (foundContainer > 0) {
+            if (foundContainer.length > 0) {
                 console.log('log')
                 if (creep.transfer(foundContainer[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(foundContainer[0], {visualizePathStyle: {stroke: '#11aa00'}})

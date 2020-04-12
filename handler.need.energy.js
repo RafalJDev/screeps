@@ -30,9 +30,9 @@ function findDroppedEnergy(creep, sourceMineablePositions) {
     return findClosestByRange
 }
 
-function handleFoundContainer(creep, foundContaienr, x, y) {
+function handleFoundContainer(creep, foundContainer, x, y) {
     // console.log(creep.withdraw(foundResource))
-    if (creep.withdraw(foundContaienr, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+    if (creep.withdraw(foundContainer, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
         creep.moveTo(x, y, {visualizePathStyle: {stroke: '#ffaa00'}})
     }
 }
@@ -56,10 +56,8 @@ function needEnergy(spawnName, creep) {
 
 
     let foundContainer = findContainerInTheMiddle(creep, source)
-    if (foundContainer.length > 0) {
-        // if (creep.memory.role = 'Builder') {
-        //     console.log('wtf')
-        // }
+    if (foundContainer.length > 0  /*&& foundContainer*/) {
+        console.log('foundContainer: ' + foundContainer + ' ,' + JSON.stringify(foundContainer))
         handleFoundContainer(creep, foundContainer[0], x, y)
     } else {
         let foundDroppedEnergy = findDroppedEnergy(creep, sourceMineablePositions)

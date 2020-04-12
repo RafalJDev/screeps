@@ -48,10 +48,11 @@ function spawnNormalCreeps(spawn) {
     const MINER = Memory.constants.MINER
     const WORKER = Memory.constants.WORKER
 
-    let haulers = Object.values(Game.creeps).filter(creep => creep.memory.role === HAULER)
-    let builders = Object.values(Game.creeps).filter(creep => creep.memory.role === BUILDER || creep.memory.role === TEMP_UPGRADER)
-    let upgraders = Object.values(Game.creeps).filter(creep => creep.memory.role === UPGRADER || creep.memory.role === TEMP_BUILDER)
-    let miners = Object.keys(Game.creeps).filter(creep => creep.includes(MINER))
+    let creeps = Game.creeps
+    let haulers = Object.values(creeps).filter(creep => creep.memory.role === HAULER)
+    let builders = Object.values(creeps).filter(creep => creep.memory.role === BUILDER || creep.memory.role === TEMP_UPGRADER)
+    let upgraders = Object.values(creeps).filter(creep => creep.memory.role === UPGRADER || creep.memory.role === TEMP_BUILDER)
+    let miners = Object.keys(creeps).filter(creep => creep.includes(MINER))
 
     let minersCount = miners.length
     let haulersCount = haulers.length
@@ -64,22 +65,21 @@ function spawnNormalCreeps(spawn) {
         .reduce((prev, cur) => prev + cur)
 
     let occupiedRoles = {}
-    for (let name in Game.creeps) {
-        let creep = Game.creeps[name]
+    for (let name in creeps) {
+        let creep = creeps[name]
         let memory = creep.memory
         let role = memory.role
         let sourceNum = memory.source
-        let positionNumber = memory.minerPositionNumber
-        occupiedRoles[role].push({source: sourceNum, positionNumber: positionNumber})
-        {
-            miner: [
 
-            ],
-                builder:
-
+        if (!occupiedRoles[role]) {
+            occupiedRoles[role] = {occupiedSpotsCounter: []}
         }
+        let occupiedSpotCounter = occupiedRoles[role]['occupiedSpotsCounter'][sourceNum]
+        let occupiedSpotsCounter = occupiedSpotCounter ?
+            occupiedSpotCounter : 0
+        occupiedRoles[role]['occupiedSpotsCounter'][sourceNum] = occupiedSpotsCounter + 1
     }
-
+    console.log("occupiedRoles = " + JSON.stringify(occupiedRoles))
 
     let totalMinerCounter = 0
     let nextSourceNumber = 0
@@ -104,22 +104,7 @@ function spawnNormalCreeps(spawn) {
     //     ' availableMineSpotsCount: ' + availableMineSpotsCount)
     let creep
 
-    if (minersCount - 1 <= buildersCount && minersCount < availableMineSpotsCount) {
-        console.log('should create miner')
-        creep = {
-            body: baseMinerBody,
-            name: MINER,
-            memory: {
-                role: MINER,
-                source: nextSourceNumber,
-                minerPosition: {
-                    minerPositionNumber: nextMineSpotNumber,
-                    x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerX,
-                    y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerY
-                }
-            }
-        }
-    } else if (haulersCount < 1) {
+    if (haulersCount < 1) {
         // console.log('should create hauler')
         creep = {
             body: baseHaulerBody,
@@ -135,6 +120,21 @@ function spawnNormalCreeps(spawn) {
             }
         }
         // console.log('wtf: ' + JSON.stringify(creep))
+    } else if (minersCount - 1 <= buildersCount && minersCount < availableMineSpotsCount) {
+        console.log('should create miner')
+        creep = {
+            body: baseMinerBody,
+            name: MINER,
+            memory: {
+                role: MINER,
+                source: nextSourceNumber,
+                minerPosition: {
+                    minerPositionNumber: nextMineSpotNumber,
+                    x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerX,
+                    y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerY
+                }
+            }
+        }
     } else if (upgradersCount < minersCount) {
         // console.log('should create upgrader')
         creep = {

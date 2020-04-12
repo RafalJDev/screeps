@@ -1,7 +1,6 @@
 function build(spawn) {
     if (spawn.room.controller.level === 1) {
         Memory.mySpawns[spawn.name].sources.forEach(source => {
-            console.log('build container')
             let mineablePositions = source.mineablePositions
             let posLength = mineablePositions.length
             let middleSpot = mineablePositions[Math.floor(posLength / 2)]

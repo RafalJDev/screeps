@@ -1,3 +1,45 @@
+var object = {
+
+    run: function (spawn) {
+        if (!Memory['mySpawns']) {
+            Memory['mySpawns'] = {}
+        }
+
+        let room = spawn.room
+
+        if (!Memory['mySpawns'][spawn.name]) {
+            Memory['mySpawns'][spawn.name] = {
+                sources: []
+            }
+            handleRoom(room, spawn)
+        }
+
+
+    }
+}
+
+module.exports = object
+
+function handleRoom(room, spawn) {
+
+    let sources = room.find(FIND_SOURCES)
+    for (let i = 0; i < sources.length; i++) {
+        let source = sources[i]
+        // console.log('source: ' + source)
+
+        let sourceX = source.pos.x
+        let sourceY = source.pos.y
+
+        // console.log('sourceX: ' + sourceX + ' sourceY: ' + sourceY)
+
+        let mineablePositions = calculateMineablePositions(sourceX, sourceY, room)
+        let maxMinersCount = mineablePositions.length
+        // console.log('mineablePositions1: ' + mineablePositions1)
+
+        fillMemoryWithSource(spawn.name, sourceX, sourceY, mineablePositions)
+    }
+}
+
 function calculateMineablePositions(sourceX, sourceY, room) {
     var mineablePositions = []
     for (let i = -1; i <= 1; i++) {
@@ -41,48 +83,3 @@ function fillMemoryWithSource(spawnName, sourceX, sourceY, mineablePositions) {
     )
 
 }
-
-function handleRoom(room, spawn) {
-
-    let sources = room.find(FIND_SOURCES)
-    for (let i = 0; i < sources.length; i++) {
-        let source = sources[i]
-        // console.log('source: ' + source)
-
-        let sourceX = source.pos.x
-        let sourceY = source.pos.y
-
-        // console.log('sourceX: ' + sourceX + ' sourceY: ' + sourceY)
-
-        let mineablePositions = calculateMineablePositions(sourceX, sourceY, room)
-        let maxMinersCount = mineablePositions.length
-        // console.log('mineablePositions1: ' + mineablePositions1)
-
-        fillMemoryWithSource(spawn.name, sourceX, sourceY, mineablePositions)
-    }
-
-
-}
-
-var object = {
-
-    run: function (spawn) {
-        if (!Memory['mySpawns']) {
-            Memory['mySpawns'] = {}
-        }
-
-        let room = spawn.room
-
-        if (!Memory['mySpawns'][spawn.name]) {
-            Memory['mySpawns'][spawn.name] = {
-                sources: []
-            }
-            handleRoom(room, spawn)
-        }
-
-
-    }
-}
-
-module.exports = object
-
