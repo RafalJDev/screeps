@@ -1,6 +1,7 @@
-var spawnCreep = require('handler.spawn.creep')
+const spawnCreep = require('handler.spawn.creep')
+const decideOnNextCreep = require('handler.next.creep')
 
-var object = {
+const object = {
 
     run: function (spawn) {
         if (
@@ -33,13 +34,88 @@ function spawnFirstCreep(spawn) {
     )
 }
 
+function prepareMiner(sources, nextSourceNumber, nextMineSpotNumber) {
+    const baseMinerBody = [WORK, WORK, CARRY, MOVE]
+    const MINER = Memory.constants.MINER
+
+    return {
+        body: baseMinerBody,
+        name: MINER,
+        memory: {
+            role: MINER,
+            source: nextSourceNumber,
+            minerPosition: {
+                minerPositionNumber: nextMineSpotNumber,
+                x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerX,
+                y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerY
+            }
+        }
+    }
+}
+
+function prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber) {
+    const baseWorkerBody = [WORK, CARRY, MOVE, WORK]
+    const UPGRADER = Memory.constants.UPGRADER
+    const WORKER = Memory.constants.WORKER
+
+
+    return {
+        body: baseWorkerBody,
+        name: WORKER,
+        memory: {
+            role: UPGRADER,
+            source: nextSourceNumber,
+            minerPosition: {
+                minerPositionNumber: nextMineSpotNumber,
+                x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerX,
+                y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerY,
+            },
+        }
+    }
+}
+
+function prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber) {
+    const baseWorkerBody = [WORK, CARRY, MOVE, WORK]
+    const BUILDER = Memory.constants.BUILDER
+    const WORKER = Memory.constants.WORKER
+
+    return {
+        body: baseWorkerBody,
+        name: WORKER,
+        memory: {
+            role: BUILDER,
+            source: nextSourceNumber,
+            minerPosition: {
+                minerPositionNumber: nextMineSpotNumber,
+                x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerX,
+                y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerY
+            },
+            building: false,
+        }
+    }
+}
+
+function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
+    const baseHaulerBody = [CARRY, MOVE, CARRY, CARRY, MOVE, CARRY]
+    const HAULER = Memory.constants.HAULER
+
+    return {
+        body: baseHaulerBody,
+        name: HAULER,
+        memory: {
+            role: HAULER,
+            source: nextSourceNumber,
+            minerPosition: {
+                minerPositionNumber: nextMineSpotNumber,
+                x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerX,
+                y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerY,
+            }
+        }
+    }
+}
+
 
 function spawnNormalCreeps(spawn) {
-
-    const baseHaulerBody = [CARRY, MOVE, CARRY, CARRY, MOVE, CARRY]
-    const baseMinerBody = [WORK, WORK, CARRY, MOVE]
-    const baseWorkerBody = [WORK, CARRY, MOVE, WORK]
-
     const HAULER = Memory.constants.HAULER
     const BUILDER = Memory.constants.BUILDER
     const TEMP_BUILDER = Memory.constants.TEMP_BUILDER
@@ -60,43 +136,11 @@ function spawnNormalCreeps(spawn) {
     let buildersCount = builders.length
 
     let sources = Memory.mySpawns[spawn.name].sources
-    let mineSpotsCountArray = sources.map(source => source.mineablePositions.length)
-    let availableMineSpotsCount = mineSpotsCountArray
-        .reduce((prev, cur) => prev + cur)
 
-    let occupiedRoles = {}
-    for (let name in creeps) {
-        let creep = creeps[name]
-        let memory = creep.memory
-        let role = memory.role
-        let sourceNum = memory.source
-
-        if (!occupiedRoles[role]) {
-            occupiedRoles[role] = {occupiedSpotsCounter: []}
-        }
-        let occupiedSpotCounter = occupiedRoles[role]['occupiedSpotsCounter'][sourceNum]
-        let occupiedSpotsCounter = occupiedSpotCounter ?
-            occupiedSpotCounter : 0
-        occupiedRoles[role]['occupiedSpotsCounter'][sourceNum] = occupiedSpotsCounter + 1
-    }
-    console.log("occupiedRoles = " + JSON.stringify(occupiedRoles))
-
-    let totalMinerCounter = 0
-    let nextSourceNumber = 0
-    let nextMineSpotNumber = 0
-
-    for (let i = 0; i < mineSpotsCountArray.length; i++) {
-        let currentMineSpotsCount = mineSpotsCountArray[i]
-        if (totalMinerCounter + currentMineSpotsCount <= minersCount) {
-            nextSourceNumber++
-            totalMinerCounter += currentMineSpotsCount
-        } else {
-            nextMineSpotNumber = minersCount - totalMinerCounter
-            break
-        }
-    }
-
-    console.log('foundNextSourceNumber: ' + nextSourceNumber + ' ,foundNextMineSpotNumber: ' + nextMineSpotNumber)
+    let foundMineSpots = decideOnNextCreep.run(creeps, sources)
+    let nextSourceNumber = foundMineSpots.nextSourceNumber
+    let nextMineSpotNumber = foundMineSpots.nextMineSpotNumber
+    let roleToCreate = foundMineSpots.roleToCreate
 
     // console.log(
     //     'let create some creep, haulersCount: ' + haulersCount +
@@ -104,68 +148,35 @@ function spawnNormalCreeps(spawn) {
     //     ' availableMineSpotsCount: ' + availableMineSpotsCount)
     let creep
 
+    switch (roleToCreate) {
+        case MINER:
+            creep = prepareMiner(sources, nextSourceNumber, nextMineSpotNumber)
+            break
+        case HAULER:
+            break
+        case UPGRADER:
+            creep = prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber)
+            break
+        case BUILDER:
+            creep = prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber)
+            break
+        default:
+            console.log('I can\'t create creep with that role: ' + roleToCreate)
+    }
+
     if (haulersCount < 1) {
         // console.log('should create hauler')
-        creep = {
-            body: baseHaulerBody,
-            name: HAULER,
-            memory: {
-                role: HAULER,
-                source: nextSourceNumber,
-                minerPosition: {
-                    minerPositionNumber: nextMineSpotNumber,
-                    x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerX,
-                    y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerY,
-                }
-            }
-        }
+        creep = prepareHauler(sources, nextSourceNumber, nextMineSpotNumber)
         // console.log('wtf: ' + JSON.stringify(creep))
-    } else if (minersCount - 1 <= buildersCount && minersCount < availableMineSpotsCount) {
-        console.log('should create miner')
-        creep = {
-            body: baseMinerBody,
-            name: MINER,
-            memory: {
-                role: MINER,
-                source: nextSourceNumber,
-                minerPosition: {
-                    minerPositionNumber: nextMineSpotNumber,
-                    x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerX,
-                    y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].minerY
-                }
-            }
-        }
+    } else if (minersCount - 1 <= buildersCount) {
+        // console.log('should create miner')
+        creep = prepareMiner(sources, nextSourceNumber, nextMineSpotNumber)
     } else if (upgradersCount < minersCount) {
         // console.log('should create upgrader')
-        creep = {
-            body: baseWorkerBody,
-            name: WORKER,
-            memory: {
-                role: UPGRADER,
-                source: nextSourceNumber,
-                minerPosition: {
-                    minerPositionNumber: nextMineSpotNumber,
-                    x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerX,
-                    y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerY,
-                },
-            }
-        }
+        creep = prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber)
     } else if (buildersCount < minersCount) {
         // console.log('should create builder')
-        creep = {
-            body: baseWorkerBody,
-            name: WORKER,
-            memory: {
-                role: BUILDER,
-                source: nextSourceNumber,
-                minerPosition: {
-                    minerPositionNumber: nextMineSpotNumber,
-                    x: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerX,
-                    y: sources[nextSourceNumber].mineablePositions[nextMineSpotNumber].workerY
-                },
-                building: false,
-            }
-        }
+        creep = prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber)
     }
 
     if (
