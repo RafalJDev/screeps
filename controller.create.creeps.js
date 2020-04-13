@@ -1,9 +1,13 @@
 const spawnCreep = require('handler.spawn.creep')
-const decideOnNextCreep = require('handler.next.creep')
+const decideWhichCreepToSpawn = require('handler.next.creep')
+const creepsMetrics = require('calculate.creeps.metrics')
 
 const object = {
 
     run: function (spawn) {
+        let sources = Memory.mySpawns[spawn.name].sources
+        let actualMetrics = creepsMetrics.run(sources)
+
         if (
             spawn.spawning ||
             spawn.store.getFreeCapacity(RESOURCE_ENERGY) !== 0
@@ -12,10 +16,10 @@ const object = {
             return
         }
 
-        if (Object.keys(Game.creeps).length < 1) {
+        if (actualMetrics.creepsCount < 1) {
             spawnFirstCreep(spawn)
         } else {
-            spawnNormalCreeps(spawn)
+            spawnNormalCreeps(spawn, sources, actualMetrics)
         }
     }
 }
@@ -115,29 +119,13 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
 }
 
 
-function spawnNormalCreeps(spawn) {
+function spawnNormalCreeps(spawn, sources, actualMetrics) {
     const HAULER = Memory.constants.HAULER
     const BUILDER = Memory.constants.BUILDER
-    const TEMP_BUILDER = Memory.constants.TEMP_BUILDER
     const UPGRADER = Memory.constants.UPGRADER
-    const TEMP_UPGRADER = Memory.constants.TEMP_UPGRADER
     const MINER = Memory.constants.MINER
-    const WORKER = Memory.constants.WORKER
 
-    let creeps = Game.creeps
-    let haulers = Object.values(creeps).filter(creep => creep.memory.role === HAULER)
-    let builders = Object.values(creeps).filter(creep => creep.memory.role === BUILDER || creep.memory.role === TEMP_UPGRADER)
-    let upgraders = Object.values(creeps).filter(creep => creep.memory.role === UPGRADER || creep.memory.role === TEMP_BUILDER)
-    let miners = Object.keys(creeps).filter(creep => creep.includes(MINER))
-
-    let minersCount = miners.length
-    let haulersCount = haulers.length
-    let upgradersCount = upgraders.length
-    let buildersCount = builders.length
-
-    let sources = Memory.mySpawns[spawn.name].sources
-
-    let foundMineSpots = decideOnNextCreep.run(creeps, sources)
+    let foundMineSpots = decideWhichCreepToSpawn.run(sources, actualMetrics)
     let nextSourceNumber = foundMineSpots.nextSourceNumber
     let nextMineSpotNumber = foundMineSpots.nextMineSpotNumber
     let roleToCreate = foundMineSpots.roleToCreate
@@ -153,6 +141,7 @@ function spawnNormalCreeps(spawn) {
             creep = prepareMiner(sources, nextSourceNumber, nextMineSpotNumber)
             break
         case HAULER:
+            creep = prepareHauler(sources, nextSourceNumber, nextMineSpotNumber)
             break
         case UPGRADER:
             creep = prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber)
@@ -160,23 +149,10 @@ function spawnNormalCreeps(spawn) {
         case BUILDER:
             creep = prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber)
             break
+        case 'Dont create creep':
+            break
         default:
             console.log('I can\'t create creep with that role: ' + roleToCreate)
-    }
-
-    if (haulersCount < 1) {
-        // console.log('should create hauler')
-        creep = prepareHauler(sources, nextSourceNumber, nextMineSpotNumber)
-        // console.log('wtf: ' + JSON.stringify(creep))
-    } else if (minersCount - 1 <= buildersCount) {
-        // console.log('should create miner')
-        creep = prepareMiner(sources, nextSourceNumber, nextMineSpotNumber)
-    } else if (upgradersCount < minersCount) {
-        // console.log('should create upgrader')
-        creep = prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber)
-    } else if (buildersCount < minersCount) {
-        // console.log('should create builder')
-        creep = prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber)
     }
 
     if (

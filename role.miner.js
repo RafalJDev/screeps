@@ -37,11 +37,15 @@ function handleMiner(spawnName, creep) {
         }
     }
 
-
+    checkIfWillDieSoon(creep)
 }
 
 function checkIfWillDieSoon(creep) {
     const ticksToCreate = 15
-    // const
+    const ticksToArriveAtMineSpot = 20
+    const safeTicks = 20
+    if (creep.ticksToLive <= ticksToCreate + ticksToArriveAtMineSpot + safeTicks) {
+        Memory.creepThatWilDieSoon = creep.memory.role
+    }
 }
 
