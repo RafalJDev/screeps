@@ -6,7 +6,7 @@ function build(spawn) {
             let middleSpot = mineablePositions[Math.floor(posLength / 2)]
             // spawn.room.createConstructionSite(middleSpot.minerX, middleSpot.minerY, STRUCTURE_CONTAINER)
 
-            // if (Game.time < 2) {
+            // if (Game.time < 20000000000) {
             //     Game.spawns.Spawn1.pos.findPathTo(middleSpot.minerX, middleSpot.minerY)
             //         .forEach(pos => Game.rooms.sim.createConstructionSite(pos.x, pos.y, STRUCTURE_ROAD))
             // }

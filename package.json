@@ -1,0 +1,47 @@
+{
+  "name": "screeps",
+  "version": "1.0.0",
+  "main": "main.js",
+  "repository": "https://github.com/rafaljdev/screeps.git",
+  "author": "rafaljdev",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn build:rollup",
+    "build:rollup": "rollup --config rollup.config.js",
+    "build:watch": "yarn build:rollup --watch",
+    "dev": "build:watch"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "jest": "^25.3.0",
+    "rollup": "^2.3.3",
+    "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-typescript": "^1.0.1",
+    "rollup-plugin-typescript2": "^0.27.0",
+    "screeps-jest": "eduter/screeps-jest#1.0.0"
+  },
+  "jest": {
+    "verbose": true,
+    "testRegex": "/__tests__/.*test.ts$",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "testEnvironment": "screeps-jest",
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "<rootDir>/tsconfig.json",
+        "diagnostics": false
+      }
+    }
+  }
+}

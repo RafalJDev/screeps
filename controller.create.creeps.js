@@ -43,7 +43,7 @@ function prepareMiner(sources, nextSourceNumber, nextMineSpotNumber) {
     const MINER = Memory.constants.MINER
 
     return {
-        body: creaetBestBody(baseMinerBody),
+        body: createBestBody(baseMinerBody),
         name: MINER,
         memory: {
             role: MINER,
@@ -64,7 +64,7 @@ function prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber) {
 
 
     return {
-        body: creaetBestBody(baseWorkerBody),
+        body: createBestBody(baseWorkerBody),
         name: WORKER,
         memory: {
             role: UPGRADER,
@@ -79,12 +79,12 @@ function prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber) {
 }
 
 function prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber) {
-    const baseWorkerBody = [WORK, WORK, CARRY, MOVE, WORK]
+    const baseWorkerBody = [WORK, CARRY, MOVE, WORK]
     const BUILDER = Memory.constants.BUILDER
     const WORKER = Memory.constants.WORKER
 
     return {
-        body: creaetBestBody(baseWorkerBody),
+        body: createBestBody(baseWorkerBody),
         name: WORKER,
         memory: {
             role: BUILDER,
@@ -104,7 +104,7 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
     const HAULER = Memory.constants.HAULER
 
     return {
-        body: creaetBestBody(baseHaulerBody),
+        body: createBestBody(baseHaulerBody),
         name: HAULER,
         memory: {
             role: HAULER,
@@ -118,7 +118,7 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
     }
 }
 
-function creaetBestBody(baseMinerBody) {
+function createBestBody(baseMinerBody) {
     const bodyPartLength = baseMinerBody.length
 
     let baseBodyCost = baseMinerBody
@@ -128,14 +128,15 @@ function creaetBestBody(baseMinerBody) {
     const availableEnergyCap = Game.spawns.Spawn1.room.energyCapacityAvailable
 
     let currentBodyCost = baseBodyCost
-    var body = baseMinerBody
-    var i = 0
+    let body = baseMinerBody
+    let i = 0
 
     while (currentBodyCost < availableEnergyCap) {
         let nextBodyPart = baseMinerBody[i++ % bodyPartLength]
         body.push(nextBodyPart)
         currentBodyCost = +BODYPART_COST[nextBodyPart]
     }
+    console.log(' = ' + JSON.stringify(body))
 
     return body
 }
