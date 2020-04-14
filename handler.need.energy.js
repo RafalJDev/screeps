@@ -10,8 +10,8 @@ module.exports = object
 
 function findContainerInTheMiddle(creep, source) {
     // console.log(JSON.stringify(creep.room.lookAt(source.middlePos.x, source.middlePos.y)))
-    let x = source.middlePos.x
-    let y = source.middlePos.y
+    let x = source.middlePos.minerX
+    let y = source.middlePos.minerY
     return creep.room.find(FIND_STRUCTURES)
         .filter(el => el.structureType === STRUCTURE_CONTAINER && el.pos.x === x && el.pos.y === y)
 
@@ -30,10 +30,16 @@ function findDroppedEnergy(creep, sourceMineablePositions) {
     return findClosestByRange
 }
 
-function handleFoundContainer(creep, foundContainer, x, y) {
+function handleFoundContainer(creep, foundContainer) {
     // console.log(creep.withdraw(foundResource))
     if (creep.withdraw(foundContainer, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(x, y, {visualizePathStyle: {stroke: '#ffaa00'}})
+        creep.moveTo(foundContainer.pos,
+        {
+            visualizePathStyle: {
+                stroke: '#ffaa00'
+            }
+        }
+    )
     }
 }
 
@@ -52,13 +58,12 @@ function needEnergy(spawnName, creep) {
 
     let source = Memory.mySpawns[spawnName].sources[sourceNum]
     let sourceMineablePositions = source.mineablePositions
-    // console.log('hauler role x:' + x + ' y:' + y)
-
 
     let foundContainer = findContainerInTheMiddle(creep, source)
+
     if (foundContainer.length > 0  /*&& foundContainer*/) {
-        console.log('foundContainer: ' + foundContainer + ' ,' + JSON.stringify(foundContainer))
-        handleFoundContainer(creep, foundContainer[0], x, y)
+        // console.log('foundContainer: ' + foundContainer + ' ,' + JSON.stringify(foundContainer))
+        handleFoundContainer(creep, foundContainer[0])
     } else {
         let foundDroppedEnergy = findDroppedEnergy(creep, sourceMineablePositions)
         if (foundDroppedEnergy) {

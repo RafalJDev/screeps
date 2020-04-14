@@ -13,9 +13,14 @@ var handlerSpawnCreep = {
             JSON.stringify(creep.memory)
         )
 
-        spawn.spawnCreep(creep.body, creep.name + '_' + Game.time, {
-            memory: creep.memory,
-        })
+        spawn.spawnCreep(
+            creep.body,
+            creep.name + '_' + Game.time,
+            {
+                memory: creep.memory,
+            },
+            {directions: RIGHT}
+        )
     }
 
 }

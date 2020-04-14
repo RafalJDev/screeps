@@ -130,10 +130,6 @@ function spawnNormalCreeps(spawn, sources, actualMetrics) {
     let nextMineSpotNumber = foundMineSpots.nextMineSpotNumber
     let roleToCreate = foundMineSpots.roleToCreate
 
-    // console.log(
-    //     'let create some creep, haulersCount: ' + haulersCount +
-    //     ' minersCount: ' + minersCount +
-    //     ' availableMineSpotsCount: ' + availableMineSpotsCount)
     let creep
 
     switch (roleToCreate) {

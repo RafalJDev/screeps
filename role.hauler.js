@@ -11,9 +11,15 @@ function deliverEnergy(creep) {
     // console.log(JSON.stringify(creep))
     if (targets.length > 0) {
         // console.log(Game.time + 'transfer:' + creep.transfer(targets[0], RESOURCE_ENERGY))
-        if (creep.transfer(targets[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        let transfer = creep.transfer(targets[0], RESOURCE_ENERGY)
+        if (transfer === ERR_NOT_IN_RANGE) {
             creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#123456'}})
-            // console.log('moveTo:' + moveTo + ' fatigue: ' )
+        } else if (transfer === ERR_FULL) {
+            let targetPos = targets[0].pos
+            let creepPos = creep.pos
+            let x = creepPos.x + (creepPos.x - targetPos.x)
+            let y = creepPos.y + (creepPos.y - targetPos.y)
+            creep.moveTo(x, y)
         }
     }
 }

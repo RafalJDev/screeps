@@ -57,10 +57,10 @@ function missingCreep(minersCount, haulersCount, upgradersCount, buildersCount) 
         return Memory.constants.MINER
     } else if (haulersCount < 1) {
         return Memory.constants.HAULER
-    } else if (upgradersCount < 1) {
-        return Memory.constants.UPGRADER
     } else if (minersCount < 2) {
         return Memory.constants.MINER
+    } else if (upgradersCount < 1) {
+        return Memory.constants.UPGRADER
     } else if (buildersCount < 1) {
         return Memory.constants.BUILDER
     }

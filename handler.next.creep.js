@@ -11,67 +11,47 @@ module.exports = object
 function decideWhichCreepToSpawn(sources, actualMetrics) {
 
     let occupiedRoles = calculateOccupiedRole(actualMetrics.creeps)
-    console.log('occupiedRoles = ' + JSON.stringify(occupiedRoles))
 
-    let roleToCreate
+    let roleToCreate = whichRoleToCreate(actualMetrics)
     let nextSourceNumber = 0
     let nextMineSpotNumber = 0
 
-    for (let role in occupiedRoles) {
-
-        let occupiedSpotsCounter = [0]
-        if (actualMetrics.missingCreep) {
-            role = actualMetrics.missingCreep
-        } else {
-            occupiedSpotsCounter = occupiedRoles[role].occupiedSpotsCounter
+    let occupiedRole = occupiedRoles[roleToCreate]
+    if (!occupiedRole || roleToCreate === 'Dont create creep') {
+        return {
+            nextSourceNumber: 0,
+            nextMineSpotNumber: 0,
+            roleToCreate: roleToCreate
         }
+    }
+    let occupiedSpotsCounter = occupiedRole.occupiedSpotsCounter
 
-        if (shouldThisRoleBeSkipped(role, actualMetrics)) {
-            continue
-        }
-        // console.log('occ = ' + JSON.stringify(occupiedSpotsCounter) + ' typeof: ' + typeof occupiedSpotsCounter)
-        for (let sourceNum = 0; sourceNum < occupiedSpotsCounter.length; sourceNum++) {
-            let availableMineSpotsCount = actualMetrics.mineSpotsCountArray[sourceNum]
+    console.log('roleToCreate: ' + roleToCreate + ', occupiedRoles = ' + JSON.stringify(occupiedRoles))
+    for (let sourceNum = 0; sourceNum < occupiedSpotsCounter.length; sourceNum++) {
+        let availableMineSpotsCount = actualMetrics.mineSpotsCountArray[sourceNum]
 
-            nextSourceNumber = sourceNum
-            nextMineSpotNumber = occupiedSpotsCounter[sourceNum]
+        nextSourceNumber = sourceNum
+        nextMineSpotNumber = occupiedSpotsCounter[sourceNum]
 
-            // console.log(
-            //     'occupiedSpotCounter: ' + occupiedSpotCounter +
-            //     ' mineSpotsCountArray[sourceNum]: ' + actualMetrics.mineSpotsCountArray[sourceNum]
-            // )
+        // console.log(' mineSpotsCountArray[sourceNum]: ' + actualMetrics.mineSpotsCountArray[sourceNum])
 
-            if (nextMineSpotNumber < availableMineSpotsCount) {
-                roleToCreate = role
-                break
-            } else if (nextMineSpotNumber === availableMineSpotsCount) {
-                if (actualMetrics.mineSpotsCountArray.length >= sourceNum + 1) {
-                    nextSourceNumber = sourceNum + 1
-                } else {
-                    roleToCreate = 'Dont create creep'
-                    break
-                }
-                nextMineSpotNumber = 0
-            } else {
-                console.log('WTf: nextMineSpotNumber: ' + nextMineSpotNumber +
-                    ' availableMineSpotsCount: ' + availableMineSpotsCount
-                )
-            }
-
-        }
-        if (roleToCreate) {
+        if (nextMineSpotNumber < availableMineSpotsCount) {
             break
+        } else if (nextMineSpotNumber === availableMineSpotsCount) {
+            if (actualMetrics.mineSpotsCountArray.length > sourceNum + 1) {
+                nextSourceNumber = sourceNum + 1
+            } else {
+                roleToCreate = 'Dont create creep'
+            }
+            nextMineSpotNumber = 0
         }
     }
 
-    if (!roleToCreate) {
-        roleToCreate = 'Miner'
-    }
-    console.log(
-        'foundNextSourceNumber: ' + nextSourceNumber +
-        ' ,foundNextMineSpotNumber: ' + nextMineSpotNumber +
-        ' ,roleToCreate = ' + JSON.stringify(roleToCreate)
-    )
+    // console.log(
+    //     'NextSourceNumber: ' + nextSourceNumber +
+    //     ' ,NextMineSpotNumber: ' + nextMineSpotNumber +
+    //     ' ,roleToCreate = ' + JSON.stringify(roleToCreate)
+    // )
 
     return {
         nextSourceNumber: nextSourceNumber,
@@ -110,22 +90,27 @@ function calculateOccupiedRole(creeps) {
     return occupiedRoles
 }
 
-function shouldThisRoleBeSkipped(role, actualMetrics) {
-    const MINER = Memory.constants.MINER
-    const HAULER = Memory.constants.HAULER
-    const BUILDER = Memory.constants.BUILDER
-    const UPGRADER = Memory.constants.UPGRADER
-
-    if (role === MINER && actualMetrics.minersCount / 2.5 > actualMetrics.haulersCount) {
-        return true
-    } else if (role === HAULER && actualMetrics.minersCount / 2.5 <= actualMetrics.haulersCount) {
-        return true
-    } else if (role === BUILDER && actualMetrics.minersCount / 1.9 <= actualMetrics.buildersCount) {
-        return true
-    } else if (role === UPGRADER && actualMetrics.minersCount / 1.9 <= actualMetrics.upgradersCount) {
-        return true
+function whichRoleToCreate(actualMetrics) {
+    // console.log('minersCount: ' + actualMetrics.minersCount)
+    // console.log('haulersCount: ' + actualMetrics.haulersCount)
+    // console.log('2:' + actualMetrics.minersCount / 2.5 > actualMetrics.haulersCount)
+    // console.log('actualMetrics.availableMineSpotsCount:' + actualMetrics.availableMineSpotsCount)
+    if (actualMetrics.missingCreep) {
+        return actualMetrics.missingCreep
+    } else if (
+        actualMetrics.minersCount / 2.5 <= actualMetrics.haulersCount &&
+        actualMetrics.minersCount < actualMetrics.availableMineSpotsCount
+    ) {
+        return Memory.constants.MINER
+    } else if (actualMetrics.minersCount / 1.5 > actualMetrics.haulersCount) {
+        return Memory.constants.HAULER
+    } else if (actualMetrics.minersCount / 1.7 > actualMetrics.buildersCount) {
+        return Memory.constants.BUILDER
+    } else if (actualMetrics.minersCount / 1.7 > actualMetrics.upgradersCount) {
+        return Memory.constants.UPGRADER
     }
-    return false
+    return 'Dont create creep'
 }
+
 
 
