@@ -39,11 +39,11 @@ function spawnFirstCreep(spawn) {
 }
 
 function prepareMiner(sources, nextSourceNumber, nextMineSpotNumber) {
-    const baseMinerBody = [WORK, WORK, CARRY, MOVE]
+    const baseMinerBody = [WORK, CARRY, MOVE, WORK]
     const MINER = Memory.constants.MINER
 
     return {
-        body: baseMinerBody,
+        body: creaetBestBody(baseMinerBody),
         name: MINER,
         memory: {
             role: MINER,
@@ -64,7 +64,7 @@ function prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber) {
 
 
     return {
-        body: baseWorkerBody,
+        body: creaetBestBody(baseWorkerBody),
         name: WORKER,
         memory: {
             role: UPGRADER,
@@ -79,12 +79,12 @@ function prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber) {
 }
 
 function prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber) {
-    const baseWorkerBody = [WORK, CARRY, MOVE, WORK]
+    const baseWorkerBody = [WORK, WORK, CARRY, MOVE, WORK]
     const BUILDER = Memory.constants.BUILDER
     const WORKER = Memory.constants.WORKER
 
     return {
-        body: baseWorkerBody,
+        body: creaetBestBody(baseWorkerBody),
         name: WORKER,
         memory: {
             role: BUILDER,
@@ -104,7 +104,7 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
     const HAULER = Memory.constants.HAULER
 
     return {
-        body: baseHaulerBody,
+        body: creaetBestBody(baseHaulerBody),
         name: HAULER,
         memory: {
             role: HAULER,
@@ -116,6 +116,28 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
             }
         }
     }
+}
+
+function creaetBestBody(baseMinerBody) {
+    const bodyPartLength = baseMinerBody.length
+
+    let baseBodyCost = baseMinerBody
+        .map(part => BODYPART_COST[part])
+        .reduce((prev, cur) => prev + cur)
+
+    const availableEnergyCap = Game.spawns.Spawn1.room.energyCapacityAvailable
+
+    let currentBodyCost = baseBodyCost
+    var body = baseMinerBody
+    var i = 0
+
+    while (currentBodyCost < availableEnergyCap) {
+        let nextBodyPart = baseMinerBody[i++ % bodyPartLength]
+        body.push(nextBodyPart)
+        currentBodyCost = +BODYPART_COST[nextBodyPart]
+    }
+
+    return body
 }
 
 

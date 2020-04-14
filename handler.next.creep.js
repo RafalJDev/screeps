@@ -95,9 +95,14 @@ function whichRoleToCreate(actualMetrics) {
     // console.log('haulersCount: ' + actualMetrics.haulersCount)
     // console.log('2:' + actualMetrics.minersCount / 2.5 > actualMetrics.haulersCount)
     // console.log('actualMetrics.availableMineSpotsCount:' + actualMetrics.availableMineSpotsCount)
-    if (actualMetrics.missingCreep) {
+    let basicCreepRole = createBasicCreeps(actualMetrics)
+    if (basicCreepRole) {
+        return basicCreepRole
+    }
+    else if (actualMetrics.missingCreep) {
         return actualMetrics.missingCreep
-    } else if (
+    }
+    else if (
         actualMetrics.minersCount / 2.5 <= actualMetrics.haulersCount &&
         actualMetrics.minersCount < actualMetrics.availableMineSpotsCount
     ) {
@@ -113,4 +118,22 @@ function whichRoleToCreate(actualMetrics) {
 }
 
 
-
+function createBasicCreeps(actualMetrics) {
+    let creepThatWillDieSoon = Memory.creepThatWilDieSoon
+    if (creepThatWillDieSoon) {
+        delete Memory.creepThatWilDieSoon
+        return creepThatWillDieSoon
+    }
+    if (actualMetrics.minersCount < 1) {
+        return Memory.constants.MINER
+    } else if (actualMetrics.haulersCount < 1) {
+        return Memory.constants.HAULER
+    } else if (actualMetrics.minersCount < 2) {
+        return Memory.constants.MINER
+    } else if (actualMetrics.upgradersCount < 1) {
+        return Memory.constants.UPGRADER
+    } else if (actualMetrics.buildersCount < 1) {
+        return Memory.constants.BUILDER
+    }
+    return null
+}

@@ -1,14 +1,17 @@
 var needEnergy = require('handler.need.energy')
 
 function deliverEnergy(creep) {
-    var targets = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return (structure.structureType === STRUCTURE_EXTENSION ||
-                structure.structureType === STRUCTURE_SPAWN ||
-                structure.structureType === STRUCTURE_TOWER)
-        }
-    })
-    // console.log(JSON.stringify(creep))
+    var targets = creep.room.find(FIND_STRUCTURES)
+        .filter(structure => {
+                return (
+                        structure.structureType === STRUCTURE_EXTENSION ||
+                        structure.structureType === STRUCTURE_SPAWN ||
+                        structure.structureType === STRUCTURE_TOWER
+                    ) &&
+                    structure.energy !== structure.energyCapacity
+            }
+        )
+    // console.log('sth:' + JSON.stringify(targets))
     if (targets.length > 0) {
         // console.log(Game.time + 'transfer:' + creep.transfer(targets[0], RESOURCE_ENERGY))
         let transfer = creep.transfer(targets[0], RESOURCE_ENERGY)
@@ -23,6 +26,7 @@ function deliverEnergy(creep) {
         }
     }
 }
+
 
 function handleHauler(spawnName, creep) {
     if (creep.store.getFreeCapacity() > 0) {

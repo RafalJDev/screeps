@@ -40,29 +40,8 @@ const object = {
             mineSpotsCountArray: mineSpotsCountArray,
             availableMineSpotsCount: availableMineSpotsCount,
             creepsCount: Object.keys(creeps).length,
-            missingCreep: missingCreep(minersCount, haulersCount, upgradersCount, buildersCount)
         }
     }
 }
 
 module.exports = object
-
-function missingCreep(minersCount, haulersCount, upgradersCount, buildersCount) {
-    let creepThatWillDieSoon = Memory.creepThatWilDieSoon
-    if (creepThatWillDieSoon) {
-        delete Memory.creepThatWilDieSoon
-        return creepThatWillDieSoon
-    }
-    if (minersCount < 1) {
-        return Memory.constants.MINER
-    } else if (haulersCount < 1) {
-        return Memory.constants.HAULER
-    } else if (minersCount < 2) {
-        return Memory.constants.MINER
-    } else if (upgradersCount < 1) {
-        return Memory.constants.UPGRADER
-    } else if (buildersCount < 1) {
-        return Memory.constants.BUILDER
-    }
-    return null
-}
