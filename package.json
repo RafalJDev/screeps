@@ -43,5 +43,8 @@
         "diagnostics": false
       }
     }
+  },
+  "dependencies": {
+    "yarn": "^1.22.4"
   }
 }
