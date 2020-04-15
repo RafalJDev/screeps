@@ -1,35 +1,41 @@
-var object = {
-
-    run: function (baseBody) {
-        console.log('b')
-        return createBestBody(baseBody)
-    }
+const run = function (baseBody) {
+    const availableEnergyCap = Game.spawns.Spawn1.room.energyCapacityAvailable
+    return createBestBody(baseBody, availableEnergyCap)
 
 }
 
-module.exports = object
-
-function createBestBody(baseBody) {
+const createBestBody = function (baseBody, availableEnergyCap) {
     console.log('func')
     const bodyPartLength = baseBody.length
 
-    let baseBodyCost = baseBody
+    let currentBodyCost = baseBody
         .map(part => BODYPART_COST[part])
         .reduce((prev, cur) => prev + cur)
-
-    const availableEnergyCap = Game.spawns.Spawn1.room.energyCapacityAvailable
-
-    let currentBodyCost = baseBodyCost
     let body = baseBody
     let i = 0
 
-    while (currentBodyCost < availableEnergyCap) {
-        console.log('while')
+    let addNextBodyPart = currentBodyCost < availableEnergyCap
+    while (addNextBodyPart) {
+
         let nextBodyPart = baseBody[i++ % bodyPartLength]
-        body.push(nextBodyPart)
-        currentBodyCost = +BODYPART_COST[nextBodyPart]
+        let nextBodyPartCost = BODYPART_COST[nextBodyPart]
+
+        if (currentBodyCost + nextBodyPartCost <= availableEnergyCap) {
+            body.push(nextBodyPart)
+            addNextBodyPart = true
+        } else if (currentBodyCost + 50 <= availableEnergyCap) {
+            body.push(MOVE)
+            addNextBodyPart = false
+        } else {
+            addNextBodyPart = false
+        }
+        currentBodyCost += nextBodyPartCost
     }
-    console.log(' = ' + JSON.stringify(body))
 
     return body
+}
+
+module.exports = {
+    run,
+    createBestBody
 }

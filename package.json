@@ -13,15 +13,10 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^7.1.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "jest": "^25.3.0",
-    "rollup": "^2.3.3",
-    "rollup-plugin-clear": "^2.0.7",
-    "rollup-plugin-typescript": "^1.0.1",
-    "rollup-plugin-typescript2": "^0.27.0",
     "screeps-jest": "eduter/screeps-jest#1.0.0"
   },
   "jest": {
@@ -30,7 +25,6 @@
       "<rootDir>/node_modules/"
     ],
     "moduleFileExtensions": [
-      "ts",
       "js"
     ],
     "testEnvironment": "screeps-jest"

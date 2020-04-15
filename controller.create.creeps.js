@@ -43,7 +43,7 @@ function prepareMiner(sources, nextSourceNumber, nextMineSpotNumber) {
     const MINER = Memory.constants.MINER
 
     return {
-        body: createBestBody(baseMinerBody),
+        body: createBestBody.run(baseMinerBody),
         name: MINER,
         memory: {
             role: MINER,
@@ -64,7 +64,7 @@ function prepareUpgrader(sources, nextSourceNumber, nextMineSpotNumber) {
 
 
     return {
-        body: createBestBody(baseWorkerBody),
+        body: createBestBody.run(baseWorkerBody),
         name: WORKER,
         memory: {
             role: UPGRADER,
@@ -84,7 +84,7 @@ function prepareBuilder(sources, nextSourceNumber, nextMineSpotNumber) {
     const WORKER = Memory.constants.WORKER
 
     return {
-        body: createBestBody(baseWorkerBody),
+        body: createBestBody.run(baseWorkerBody),
         name: WORKER,
         memory: {
             role: BUILDER,
@@ -104,7 +104,7 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
     const HAULER = Memory.constants.HAULER
 
     return {
-        body: createBestBody(baseHaulerBody),
+        body: createBestBody.run(baseHaulerBody),
         name: HAULER,
         memory: {
             role: HAULER,
