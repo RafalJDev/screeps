@@ -1,30 +1,30 @@
 const spawnCreep = require('handler.spawn.creep')
 const decideWhichCreepToSpawn = require('handler.next.creep')
 const creepsMetrics = require('calculate.creeps.metrics')
+const createBestBody = require('handler.create.best.body')
 
-const object = {
+const run = function (spawn) {
+    let sources = Memory.mySpawns[spawn.name].sources
+    let actualMetrics = creepsMetrics.run(sources)
 
-    run: function (spawn) {
-        let sources = Memory.mySpawns[spawn.name].sources
-        let actualMetrics = creepsMetrics.run(sources)
+    if (
+        spawn.spawning ||
+        spawn.store.getFreeCapacity(RESOURCE_ENERGY) !== 0
+    ) {
+        // console.log('won\'t create creep' )
+        return
+    }
 
-        if (
-            spawn.spawning ||
-            spawn.store.getFreeCapacity(RESOURCE_ENERGY) !== 0
-        ) {
-            // console.log('won\'t create creep' )
-            return
-        }
-
-        if (actualMetrics.creepsCount < 1) {
-            spawnFirstCreep(spawn)
-        } else {
-            spawnNormalCreeps(spawn, sources, actualMetrics)
-        }
+    if (actualMetrics.creepsCount < 1) {
+        spawnFirstCreep(spawn)
+    } else {
+        spawnNormalCreeps(spawn, sources, actualMetrics)
     }
 }
 
-module.exports = object
+
+module.exports = {run }
+
 
 function spawnFirstCreep(spawn) {
     spawnCreep.run(spawn,
@@ -116,29 +116,6 @@ function prepareHauler(sources, nextSourceNumber, nextMineSpotNumber) {
             }
         }
     }
-}
-
-function createBestBody(baseMinerBody) {
-    const bodyPartLength = baseMinerBody.length
-
-    let baseBodyCost = baseMinerBody
-        .map(part => BODYPART_COST[part])
-        .reduce((prev, cur) => prev + cur)
-
-    const availableEnergyCap = Game.spawns.Spawn1.room.energyCapacityAvailable
-
-    let currentBodyCost = baseBodyCost
-    let body = baseMinerBody
-    let i = 0
-
-    while (currentBodyCost < availableEnergyCap) {
-        let nextBodyPart = baseMinerBody[i++ % bodyPartLength]
-        body.push(nextBodyPart)
-        currentBodyCost = +BODYPART_COST[nextBodyPart]
-    }
-    console.log(' = ' + JSON.stringify(body))
-
-    return body
 }
 
 

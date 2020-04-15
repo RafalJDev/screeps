@@ -9,7 +9,8 @@
     "build": "yarn build:rollup",
     "build:rollup": "rollup --config rollup.config.js",
     "build:watch": "yarn build:rollup --watch",
-    "dev": "build:watch"
+    "dev": "build:watch",
+    "test": "jest"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^7.1.1",
@@ -25,10 +26,6 @@
   },
   "jest": {
     "verbose": true,
-    "testRegex": "/__tests__/.*test.ts$",
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/"
     ],
@@ -36,13 +33,7 @@
       "ts",
       "js"
     ],
-    "testEnvironment": "screeps-jest",
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "<rootDir>/tsconfig.json",
-        "diagnostics": false
-      }
-    }
+    "testEnvironment": "screeps-jest"
   },
   "dependencies": {
     "yarn": "^1.22.4"

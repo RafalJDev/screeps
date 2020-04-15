@@ -1,4 +1,3 @@
-var totalBodyCost = require('calculate.total.body.cost')
 var sourcesController = require('controller.sources')
 var towersController = require('controller.towers')
 var creepsController = require('controller.creeps')
@@ -17,7 +16,6 @@ Memory.constants = {
 }
 
 module.exports.loop = function () {
-
     // clearMemoryFromNonExistingCreeps()
 
     for (const spawnName in Game.spawns) {
